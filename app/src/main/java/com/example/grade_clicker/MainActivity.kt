@@ -1,6 +1,7 @@
 package com.example.grade_clicker
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -22,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -34,9 +36,12 @@ import com.example.grade_clicker.data.Datasource
 import com.example.grade_clicker.model.Grade
 import com.example.grade_clicker.ui.theme.GradeClickerTheme
 
+private const val TAG = "MainActivity"
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "onCreate Called")
         setContent {
             GradeClickerTheme {
                 Surface(
@@ -47,9 +52,39 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onStart() {
+        super.onStart()
+        Log.d(TAG, "onStart Called")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume Called")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.d(TAG, "onRestart Called")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause Called")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop Called")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy Called")
+    }
 }
 
-// Функция определения текущей оценки
+
 fun determineGradeToShow(grades: List<Grade>, points: Int): Grade {
     var gradeToShow = grades.first()
     for (grade in grades) {
@@ -62,11 +97,10 @@ fun determineGradeToShow(grades: List<Grade>, points: Int): Grade {
     return gradeToShow
 }
 
-
 @Composable
 fun GradeClickerApp(grades: List<Grade>) {
-    var points by remember { mutableStateOf(0) }
-    var clicks by remember { mutableStateOf(0) }
+    var points by rememberSaveable { mutableStateOf(0) }
+    var clicks by rememberSaveable { mutableStateOf(0) }
     val currentGrade = determineGradeToShow(grades, points)
 
     Column(
@@ -76,11 +110,13 @@ fun GradeClickerApp(grades: List<Grade>) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+
         Text(
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(16.dp)
         )
+
 
         Image(
             painter = painterResource(currentGrade.imageId),
@@ -94,21 +130,14 @@ fun GradeClickerApp(grades: List<Grade>) {
             contentScale = ContentScale.Fit
         )
 
-        TransactionInfo(
-            points = points,
-            clicks = clicks
-        )
+        TransactionInfo(points = points, clicks = clicks)
     }
 }
 
 @Composable
-fun TransactionInfo(
-    points: Int,
-    clicks: Int,
-    modifier: Modifier = Modifier
-) {
+fun TransactionInfo(points: Int, clicks: Int) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
     ) {
@@ -143,6 +172,7 @@ fun TransactionInfo(
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun GradeClickerPreview() {
